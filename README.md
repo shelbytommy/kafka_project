@@ -23,7 +23,7 @@ docker run --name jupyter -p 8888:8888 jupyter/datascience-notebook:latest
 
 **Airflow**
 ```bash
-curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.7.2/docker-compose.yaml
+curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.7.2/docker-compose.yaml'
 
 docker-compose up
 ```
