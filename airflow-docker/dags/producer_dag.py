@@ -12,31 +12,19 @@ from confluent_kafka import SerializingProducer
 from confluent_kafka.serialization import StringSerializer
 
 
-# data_dir = /opt/airflow/dags/data
-
-
 def test_version():
     import confluent_kafka
 
     print(f"version of confluent_kafka: {confluent_kafka.__version__}")
 
 
-def test():
-    df = pd.read_csv(
-        os.path.join(
-            Variable.get("data_dir"),
-            'Waterbase_v2018_1_T_WISE4_BiologyEQRClassificationProcedure.csv',
-        )
-    )
-    print("Csv file data:")
-    return df.head(1)
-
-
 def emit_data():
+    # data_dir = /opt/airflow/dags/data
     df = pd.read_csv(
         os.path.join(
             Variable.get("data_dir"),
-            'Waterbase_v2018_1_T_WISE4_BiologyEQRClassificationProcedure.csv',
+            'Waterbase_v2018_1_T_WISE4_BiologyEQRData.csv',
+            # 'Waterbase_v2018_1_T_WISE4_AggregatedData.csv',
         )
     )
     kafka_config = {
@@ -47,7 +35,7 @@ def emit_data():
         'batch.num.messages': 100,
     }
 
-    topic = 'test_topic'
+    topic = 'water_quality_data'
     producer = SerializingProducer(kafka_config)
 
     for _, row in df.iterrows():
@@ -69,9 +57,8 @@ with DAG(
     test_version_task = PythonOperator(
         task_id="test_version", python_callable=test_version
     )
-    test_task = PythonOperator(task_id="test_task", python_callable=test)
     emit_data_task = PythonOperator(
         task_id="emit_water_quality_data", python_callable=emit_data
     )
 
-    test_version_task >> test_task >> emit_data_task
+    test_version_task >> emit_data_task
